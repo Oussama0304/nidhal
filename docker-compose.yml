@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
-  # Service pour le backend Node.js
   backend:
     build:
-      context: .
+      context: ./pfe-project
       dockerfile: Dockerfile.backend
     ports:
       - "5000:5000"
@@ -17,18 +14,20 @@ services:
       - DB_NAME=ProjetPfeAgil
     networks:
       - app-network
+    restart: unless-stopped
 
-  # Service pour le frontend React.js
   frontend:
     build:
-      context: .
+      context: ./pffe-project-front
       dockerfile: Dockerfile.frontend
     ports:
       - "80:80"
+    depends_on:
+      - backend
     networks:
       - app-network
+    restart: unless-stopped
 
-  # Service pour MySQL
   mysql:
     image: mysql:5.7
     environment:
@@ -36,9 +35,15 @@ services:
       MYSQL_DATABASE: ProjetPfeAgil
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - app-network
+    restart: unless-stopped
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql_data:
