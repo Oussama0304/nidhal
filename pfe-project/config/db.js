@@ -1,12 +1,14 @@
 const mysql = require('mysql');
 
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'ProjetPfeAgil',
-    connectionLimit: 10
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'root_password',
+    database: process.env.DB_NAME || 'ProjetPfeAgil',
+    connectionLimit: 10,
+    connectTimeout: 60000
 });
+
 
 // Ajouter la colonne idUtilisateur si elle n'existe pas
 const addUserIdColumn = () => {

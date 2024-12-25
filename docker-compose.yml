@@ -4,14 +4,16 @@ services:
       context: ./pfe-project
       dockerfile: Dockerfile.backend
     ports:
-      - "5000:5000"
+      - "5000:3000"  # Map container port 3000 to host port 5000
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       - DB_HOST=mysql
       - DB_USER=root
       - DB_PASSWORD=root_password
       - DB_NAME=ProjetPfeAgil
+      - NODE_ENV=production
     networks:
       - app-network
     restart: unless-stopped
@@ -30,16 +32,25 @@ services:
 
   mysql:
     image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: ProjetPfeAgil
+      MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/database.sql
     networks:
       - app-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 networks:
   app-network:
