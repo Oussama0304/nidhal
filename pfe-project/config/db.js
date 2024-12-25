@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 
 const db = mysql.createPool({
-    host: process.env.DB_HOST || 'mysql',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root_password',
-    database: process.env.DB_NAME || 'ProjetPfeAgil',
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'admin',
+    password: process.env.DB_PASSWORD || 'admin_password',
+    database: process.env.DB_NAME || 'mydatabase',
     connectionLimit: 10,
     connectTimeout: 60000
 });
@@ -19,7 +19,7 @@ const addUserIdColumn = () => {
         AND COLUMN_NAME = ?
     `;
 
-    db.query(checkColumnQuery, ['ProjetPfeAgil', 'Commande', 'idUtilisateur'], (err, results) => {
+    db.query(checkColumnQuery, ['mydatabase', 'Commande', 'idUtilisateur'], (err, results) => {
         if (err) {
             console.error('Erreur lors de la vérification de la colonne :', err);
             return;

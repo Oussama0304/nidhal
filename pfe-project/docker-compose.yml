@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   backend:
-    image: oussama22444/backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
     container_name: pfe-backend
     ports:
       - "5000:3000"
@@ -17,12 +19,13 @@ services:
     restart: always
     depends_on:
       - mysql
-    command: ["./wait-for-mysql.sh", "mysql:3306", "--", "npm", "start"]
     networks:
       - pfe-network
 
   frontend:
-    image: oussama22444/frontend:latest
+    build:
+      context: ./pffe-project-front
+      dockerfile: Dockerfile.frontend
     container_name: pfe-frontend
     ports:
       - "80:80"
@@ -33,17 +36,20 @@ services:
       - pfe-network
 
   mysql:
-    image: mysql:8.0
-    container_name: pfe-mysql
+    image: mysql:5.7
+    container_name: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root_password
       - MYSQL_DATABASE=ProjetPfeAgil
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - pfe-network
+    command: --default-authentication-plugin=mysql_native_password
 
 networks:
   pfe-network:
