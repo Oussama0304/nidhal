@@ -40,11 +40,11 @@ io.on('connection', (socket) => {
 
 // Database connection
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '', // Pas de mot de passe
-    database: process.env.DB_NAME || 'ProjetPfeAgil',
-    connectTimeout: 60000
+  host: process.env.DB_HOST || 'mysql',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'root_password',
+  database: process.env.DB_NAME || 'ProjetPfeAgil',
+  connectTimeout: 60000
 });
 
 // Retry connection
