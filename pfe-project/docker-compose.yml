@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
+    image: oussama22444/backend:latest
     container_name: pfe-backend
     ports:
       - "5000:3000"
@@ -24,9 +22,7 @@ services:
       - pfe-network
 
   frontend:
-    build:
-      context: ./pffe-project-front
-      dockerfile: Dockerfile.frontend
+    image: oussama22444/frontend:latest
     container_name: pfe-frontend
     ports:
       - "80:80"
