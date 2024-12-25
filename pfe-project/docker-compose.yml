@@ -10,9 +10,15 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=ProjetPfeAgil
     volumes:
       - ./uploads:/usr/src/app/uploads
     restart: always
+    depends_on:
+      - mysql
     networks:
       - pfe-network
 
@@ -29,6 +35,22 @@ services:
     networks:
       - pfe-network
 
+  mysql:
+    image: mysql:8.0
+    container_name: pfe-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=ProjetPfeAgil
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - pfe-network
+
 networks:
   pfe-network:
     driver: bridge
+
+volumes:
+  mysql_data:

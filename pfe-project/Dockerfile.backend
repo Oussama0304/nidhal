@@ -1,6 +1,9 @@
 # Use Node.js LTS version
 FROM node:18-alpine
 
+# Install netcat
+RUN apk add --no-cache netcat-openbsd
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -10,6 +13,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Copy wait script
+COPY wait-for-mysql.sh .
+RUN chmod +x wait-for-mysql.sh
+
 # Copy app source
 COPY . .
 
@@ -17,4 +24,4 @@ COPY . .
 EXPOSE 3000
 
 # Command to run the app
-CMD ["npm", "start"]
+CMD ["./wait-for-mysql.sh", "mysql", "npm", "start"]
