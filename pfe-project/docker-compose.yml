@@ -3,11 +3,11 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./pfe-project
+      context: .
       dockerfile: Dockerfile.backend
     container_name: pfe-backend
     ports:
-      - "3000:3000"
+      - "5000:3000"
     environment:
       - NODE_ENV=production
       - DB_HOST=mysql
@@ -19,6 +19,7 @@ services:
     restart: always
     depends_on:
       - mysql
+    command: ["./wait-for-mysql.sh", "mysql:3306", "--", "npm", "start"]
     networks:
       - pfe-network
 
