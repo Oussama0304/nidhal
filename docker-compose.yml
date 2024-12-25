@@ -11,7 +11,7 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_USER=root
-      - DB_PASSWORD=root_password
+      - DB_PASSWORD=
       - DB_NAME=ProjetPfeAgil
       - NODE_ENV=production
     networks:
@@ -34,7 +34,7 @@ services:
     image: mysql:5.7
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: 
       MYSQL_DATABASE: ProjetPfeAgil
       MYSQL_ROOT_HOST: '%'
     ports:
