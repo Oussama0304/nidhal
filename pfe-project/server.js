@@ -40,27 +40,19 @@ io.on('connection', (socket) => {
 
 // Database connection
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'mysql',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root_password',
-  database: process.env.DB_NAME || 'ProjetPfeAgil',
-  connectTimeout: 60000
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'ProjetPfeAgil'
 });
 
-// Retry connection
-const connectWithRetry = () => {
-    db.connect((err) => {
-        if (err) {
-            console.error('Erreur de connexion à la base de données :', err.message);
-            console.log('Nouvelle tentative dans 5 secondes...');
-            setTimeout(connectWithRetry, 5000);
-            return;
-        }
-        console.log('Connecté à la base de données MySQL');
-    });
-};
-
-connectWithRetry();
+db.connect((err) => {
+    if (err) {
+        console.error('Error connecting to database:', err);
+        return;
+    }
+    console.log('Connected to MySQL database');
+});
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -94,4 +86,8 @@ app.use((err, req, res, next) => {
 app.set('io', io);
 
 const PORT = process.env.PORT || 3000;
-server.listen
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+module.exports = app;

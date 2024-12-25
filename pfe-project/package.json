@@ -6,9 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "init-db": "node config/initDb.js",
-    "build": "echo 'Backend build step completed'",
-    "test": "echo 'No tests specified' && exit 0"
+    "init-db": "node config/initDb.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

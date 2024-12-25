@@ -1,13 +1,24 @@
 const mysql = require('mysql');
 
-const db = mysql.createPool({
-    host: process.env.DB_HOST || 'mysql',
+// Determine if we're running in Docker
+const isDocker = process.env.NODE_ENV === 'production';
+
+// Configuration de la base de données
+const dbConfig = {
+    host: isDocker ? 'mysql' : 'localhost',
     user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root_password',
+    password: isDocker ? 'root_password' : '',
     database: process.env.DB_NAME || 'ProjetPfeAgil',
     connectionLimit: 10,
     connectTimeout: 60000
+};
+
+console.log('Database Configuration:', {
+    ...dbConfig,
+    password: dbConfig.password ? '****' : 'none'
 });
+
+const db = mysql.createPool(dbConfig);
 
 // Fonction pour ajouter la colonne idUtilisateur si elle n'existe pas
 const addUserIdColumn = () => {
