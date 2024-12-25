@@ -40,19 +40,27 @@ io.on('connection', (socket) => {
 
 // Database connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'ProjetPfeAgil'
+    host: process.env.DB_HOST || 'mysql',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'root_password',
+    database: process.env.DB_NAME || 'ProjetPfeAgil',
+    connectTimeout: 60000
 });
 
-db.connect((err) => {
-    if (err) {
-        console.error('Error connecting to database:', err);
-        return;
-    }
-    console.log('Connected to MySQL database');
-});
+// Retry connection
+const connectWithRetry = () => {
+    db.connect((err) => {
+        if (err) {
+            console.error('Error connecting to database:', err);
+            console.log('Retrying in 5 seconds...');
+            setTimeout(connectWithRetry, 5000);
+            return;
+        }
+        console.log('Connected to MySQL database');
+    });
+};
+
+connectWithRetry();
 
 // Import routes
 const authRoutes = require('./routes/auth');
