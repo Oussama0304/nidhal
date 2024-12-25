@@ -15,6 +15,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/database.sql
+
   backend:
     build:
       context: ./pfe-project
@@ -22,11 +23,12 @@ services:
     ports:
       - "5000:3000"  # Map container port 3000 to host port 5000
     depends_on:
-      - mysql:
+      - mysql
     networks:
       - myNetworkk
     restart: unless-stopped
- frontend:
+
+  frontend:
     build:
       context: ./pffe-project-front
       dockerfile: Dockerfile.frontend
@@ -34,9 +36,10 @@ services:
       - "80:80"
     depends_on:
       - backend
-     networks:
+    networks:
       - myNetworkk
     restart: unless-stopped
+
 networks:
   myNetworkk:
     driver: bridge
