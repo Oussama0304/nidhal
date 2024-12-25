@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+    
+    tools {
+        nodejs 'NodeJS'
+    }
+    
+    environment {
+        DOCKER_REGISTRY = 'your-registry'  // Remplacez par votre registry si nécessaire
+    }
+    
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        
+        stage('Backend Build') {
+            steps {
+                script {
+                    sh 'npm run build || true'
+                }
+            }
+        }
+        
+        stage('Docker Build') {
+            steps {
+                script {
+                    sh 'docker-compose build'
+                }
+            }
+        }
+        
+        stage('Docker Deploy') {
+            steps {
+                script {
+                    sh '''
+                        docker-compose down
+                        docker-compose up -d
+                    '''
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline exécuté avec succès'
+        }
+        failure {
+            echo 'Pipeline échoué'
+        }
+    }
+}
