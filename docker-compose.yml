@@ -11,7 +11,7 @@ services:
     ports:
       - "3307:3306"
     networks:
-      - myNetworkk
+      - myNetwork
     volumes:
       - mysql_data:/var/lib/mysql
       - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/database.sql
@@ -26,27 +26,27 @@ services:
       - DB_PASSWORD=
       - DB_NAME=ProjetPfeAgil
     ports:
-      - "5000:3000"  # Map container port 3000 to host port 5000
+      - "5000:3000"
     depends_on:
       - mysql
     networks:
-      - myNetworkk
+      - myNetwork
     restart: unless-stopped
 
   frontend:
     build:
-      context: ./pffe-project-front
+      context: ./pfe-project-front
       dockerfile: Dockerfile.frontend
     ports:
       - "80:80"
     depends_on:
       - backend
     networks:
-      - myNetworkk
+      - myNetwork
     restart: unless-stopped
 
 networks:
-  myNetworkk:
+  myNetwork:
     driver: bridge
 
 volumes:

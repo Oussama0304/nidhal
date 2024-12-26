@@ -116,6 +116,7 @@ VALUES (
     '9999',
     'ADMIN'
 );
+
 -- Identifiants permanents :
 -- Email: admin@pfe.tn
 -- Mot de passe: admin123
