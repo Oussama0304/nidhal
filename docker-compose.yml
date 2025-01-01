@@ -1,58 +1,76 @@
-version: "3"
+version: "3.8"
 
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: ProjetPfeAgil
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
     networks:
       - myNetwork
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     command: --default-authentication-plugin=mysql_native_password
 
   backend:
     build:
-      context: ./pfe-project
+      context: .
       dockerfile: Dockerfile.backend
     container_name: backend
     environment:
       - DB_HOST=mysql
       - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=
       - DB_NAME=ProjetPfeAgil
+      - NODE_ENV=production
     ports:
       - "5000:3000"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - myNetwork
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
-      context: ./pfe-project-front
+      context: ../pfe-project-front
       dockerfile: Dockerfile.frontend
     container_name: frontend
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - myNetwork
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   myNetwork:
     driver: bridge
+    name: pfe_network
 
 volumes:
   mysql_data:
+    name: pfe_mysql_data

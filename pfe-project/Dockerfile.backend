@@ -1,8 +1,8 @@
 # Use Node.js LTS version
 FROM node:18-alpine
 
-# Install netcat
-RUN apk add --no-cache netcat-openbsd
+# Install netcat and other useful tools
+RUN apk add --no-cache netcat-openbsd curl
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -23,5 +23,17 @@ COPY . .
 # Expose port
 EXPOSE 3000
 
-# Command to run the app
-CMD ["./wait-for-mysql.sh", "mysql", "npm", "start"]
+# Set environment variable for better Node.js logging
+ENV NODE_ENV=production
+ENV NPM_CONFIG_LOGLEVEL=info
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:3000/ || exit 1
+
+# Command to run the app with better logging
+CMD echo "Starting application..." && \
+    ./wait-for-mysql.sh mysql && \
+    echo "MySQL is ready!" && \
+    echo "Launching Node.js application..." && \
+    npm start | tee /dev/stdout

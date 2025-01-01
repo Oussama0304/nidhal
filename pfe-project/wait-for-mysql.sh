@@ -7,11 +7,13 @@ host="$1"
 shift
 cmd="$@"
 
-until nc -z -v -w30 "$host" 3306
-do
-  echo "Waiting for MySQL to be ready... (${host}:3306)"
-  sleep 2
+echo "🔄 Waiting for MySQL to be ready on $host:3306..."
+until nc -z -v -w30 "$host" 3306; do
+  echo "⏳ Still waiting for MySQL... Will retry in 1 second"
+  sleep 1
 done
 
-echo "MySQL is up - executing command"
+echo "✅ MySQL is up and running!"
+echo "🚀 Executing command: $cmd"
+
 exec $cmd
