@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
 
 // Database connection
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: 'mysql',
     user: 'root',
     password: '',
     database: 'ProjetPfeAgil'
