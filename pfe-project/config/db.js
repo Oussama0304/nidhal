@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 
 const db = mysql.createPool({
-    host: process.env.DB_HOST || 'mysql',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root',
-    database: process.env.DB_NAME || 'ProjetPfeAgil',
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'ProjetPfeAgil',
     connectionLimit: 10
 });
 
@@ -25,16 +25,21 @@ const addUserIdColumn = () => {
         `;
 
         connection.query(checkColumnQuery, (err, results) => {
+            connection.release();
             if (err) {
                 console.error('Erreur lors de la vérification de la colonne:', err);
-            } else if (results[0].count === 0) {
+                return;
+            }
+
+            if (results[0].count === 0) {
                 const alterTableQuery = `
                     ALTER TABLE Commande
                     ADD COLUMN idUtilisateur BIGINT,
                     ADD CONSTRAINT fk_commande_utilisateur
                     FOREIGN KEY (idUtilisateur) REFERENCES Utilisateur(identifiant)
                 `;
-                connection.query(alterTableQuery, (err) => {
+
+                db.query(alterTableQuery, (err) => {
                     if (err) {
                         console.error('Erreur lors de l\'ajout de la colonne:', err);
                     } else {
@@ -42,7 +47,6 @@ const addUserIdColumn = () => {
                     }
                 });
             }
-            connection.release();
         });
     });
 };

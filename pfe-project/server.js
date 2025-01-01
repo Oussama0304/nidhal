@@ -1,10 +1,10 @@
 const express = require('express');
+const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const auth = require('./middleware/auth');
 const http = require('http');
 const path = require('path');
-const db = require('./config/db');
 
 const app = express();
 const server = http.createServer(app);
@@ -36,6 +36,22 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Un client est déconnecté');
   });
+});
+
+// Database connection
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'ProjetPfeAgil'
+});
+
+db.connect((err) => {
+    if (err) {
+        console.error('Error connecting to database:', err);
+        return;
+    }
+    console.log('Connected to MySQL database');
 });
 
 // Import routes
