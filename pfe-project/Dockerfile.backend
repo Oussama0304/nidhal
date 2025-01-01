@@ -27,13 +27,13 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV NPM_CONFIG_LOGLEVEL=info
 
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:3000/ || exit 1
+# Add healthcheck with more generous timing
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:3000/ || exit 1
 
 # Command to run the app with better logging
 CMD echo "Starting application..." && \
     ./wait-for-mysql.sh mysql && \
     echo "MySQL is ready!" && \
     echo "Launching Node.js application..." && \
-    npm start | tee /dev/stdout
+    node server.js
