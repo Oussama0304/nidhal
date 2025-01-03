@@ -1,8 +1,27 @@
 version: "3.8"
 
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: backend
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=ProjetPfeAgil
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - myNetwork
+    restart: unless-stopped
   mysql:
-    image: mysql:8.0
+    image: mysql:8.0.33
     container_name: mysql
     restart: unless-stopped
     environment:
@@ -25,33 +44,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    container_name: backend
-    environment:
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=
-      - DB_NAME=ProjetPfeAgil
-      - NODE_ENV=production
-    ports:
-      - "5000:3000"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - myNetwork
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-
   frontend:
     build:
       context: ../pfe-project-front

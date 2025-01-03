@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 
 const db = mysql.createPool({
-    host: 'localhost',
+    host: 'mysql',
     user: 'root',
     password: '',
     database: 'ProjetPfeAgil',

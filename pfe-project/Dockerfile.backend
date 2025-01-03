@@ -1,39 +1,15 @@
-# Use Node.js LTS version
-FROM node:18-alpine
-
-# Install netcat and other useful tools
-RUN apk add --no-cache netcat-openbsd curl
-
-# Create app directory
-WORKDIR /usr/src/app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
+# Use a base image with NodeJS 18
+FROM node:18
+ 
+# Install all the dependencies in the container using the package.json file
+COPY package.json .
 RUN npm install
-
-# Copy wait script
-COPY wait-for-mysql.sh .
-RUN chmod +x wait-for-mysql.sh
-
-# Copy app source
+ 
+# Copy the remaining project files to the container
 COPY . .
-
-# Expose port
+ 
+# Expose the application port
 EXPOSE 3000
-
-# Set environment variable for better Node.js logging
-ENV NODE_ENV=production
-ENV NPM_CONFIG_LOGLEVEL=info
-
-# Add healthcheck with more generous timing
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:3000/ || exit 1
-
-# Command to run the app with better logging
-CMD echo "Starting application..." && \
-    ./wait-for-mysql.sh mysql && \
-    echo "MySQL is ready!" && \
-    echo "Launching Node.js application..." && \
-    node server.js
+ 
+# Run the App
+CMD npm start
