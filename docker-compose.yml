@@ -9,7 +9,7 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_USER=root
-      - DB_PASSWORD=
+      - DB_PASSWORD=my-secret-pw # Le mot de passe pour MySQL
       - DB_NAME=ProjetPfeAgil
       - NODE_ENV=production
     ports:
@@ -20,17 +20,17 @@ services:
     networks:
       - myNetwork
     restart: unless-stopped
+
   mysql:
     image: mysql:8.0.33
     container_name: mysql
     restart: unless-stopped
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: my-secret-pw # Ajout d'un mot de passe pour MySQL
       MYSQL_DATABASE: ProjetPfeAgil
       MYSQL_ROOT_HOST: "%"
     command: 
       - --default-authentication-plugin=mysql_native_password
-      - --skip-grant-tables
     ports:
       - "3306:3306"
     networks:
@@ -44,6 +44,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
   frontend:
     build:
       context: ../pfe-project-front

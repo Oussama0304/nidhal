@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const db = mysql.createPool({
     host: 'mysql',
     user: 'root',
-    password: '',
+    password: 'my-secret-pw', // Le mot de passe MySQL
     database: 'ProjetPfeAgil',
     connectionLimit: 10
 });
