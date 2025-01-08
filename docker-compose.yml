@@ -6,25 +6,25 @@ services:
     container_name: mysqldb
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=my-secret-pw  # Utilisation de variables d'environnement
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
       - MYSQL_DATABASE=ProjetPfeAgil
     ports:
-      - "3306:3306"  # Port local : port docker
+      - "3306:3306"
     volumes:
-      - db:/var/lib/mysql  # Volume persistant pour la base de données
+      - db:/var/lib/mysql
     networks:
-      - backend  # Réseau interne pour communication avec le backend
+      - backend
 
   back:
     depends_on:
-      - mysqldb  # Dépend de mysqldb pour que MySQL soit prêt avant
+      - mysqldb
     build:
-      context: ./pfe-project  # Répertoire du backend
+      context: ./pfe-project
       dockerfile: Dockerfile.backend
     container_name: back
     restart: unless-stopped
     ports:
-      - "3000:3000"  # Port local : port docker
+      - "3000:3000"
     environment:
       - DB_HOST=mysqldb
       - DB_USER=root
@@ -33,26 +33,24 @@ services:
       - DB_PORT=3306
       - CLIENT_ORIGIN=http://localhost:3001
     networks:
-      - backend  # Réseau interne pour communication avec mysqldb
-      - frontend  # Réseau pour interagir avec le frontend
+      - backend
+      - frontend
 
   front:
     depends_on:
-      - back  # Dépend de bezkoder-api pour être sûr que l'API est prête
+      - back
     build:
-      context: ./pffe-project-front  # Répertoire du frontend
+      context: ./pffe-project-front
       dockerfile: Dockerfile.frontend
-      args:
-        - REACT_APP_API_BASE_URL=http://localhost:3000  # URL de l'API
     container_name: front
     ports:
-      - "80:80"  # Port local : port docker
+      - "80:80"
     networks:
-      - frontend  # Réseau pour interagir avec le frontend
+      - frontend
 
-volumes: 
-  db:  # Volume persistant pour la base de données MySQL
+volumes:
+  db:
 
 networks:
-  backend:  # Réseau interne pour la communication backend <=> MySQL et backend <=> frontend
-  frontend:  # Réseau interne pour la communication frontend <=> backend
+  backend:
+  frontend:
