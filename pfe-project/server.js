@@ -3,7 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const auth = require('./middleware/auth');
+const auth = require('./middleware/auth'); // Si nécessaire, sinon retirez cette ligne
 const http = require('http');
 const path = require('path');
 
@@ -57,6 +57,26 @@ db.getConnection((err, connection) => {
   }
   console.log('Connecté à la base de données MySQL');
   connection.release();
+});
+
+// Définir une route pour '/'
+app.get('/', (req, res) => {
+  res.send('Bienvenue sur le serveur Node.js pour le projet PFE.');
+});
+
+// Exemple d'une route API
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API fonctionne correctement !' });
+});
+
+// Tester la connexion à la base de données
+app.get('/test-db', (req, res) => {
+  db.query('SELECT 1 + 1 AS solution', (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erreur de connexion à la base de données', details: err });
+    }
+    res.json({ message: 'Connexion réussie', solution: results[0].solution });
+  });
 });
 
 // Start server on configured port
