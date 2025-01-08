@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost/api';
+const API_BASE_URL = '/api';
 
 export const API_ENDPOINTS = {
     BASE_URL: API_BASE_URL,

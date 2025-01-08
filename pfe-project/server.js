@@ -3,7 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const auth = require('./middleware/auth'); // Si nécessaire, sinon retirez cette ligne
+const auth = require('./middleware/auth'); 
 const http = require('http');
 const path = require('path');
 
@@ -11,16 +11,19 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:80",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost",
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:80",
-  credentials: true
+  origin: process.env.CLIENT_ORIGIN || "http://localhost",
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -60,12 +63,27 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
-// API Routes
-app.use('/api', require('./routes/api'));
-
 // Définir une route pour '/'
 app.get('/', (req, res) => {
-  res.send('Bienvenue sur le serveur Node.js pour le projet PFE.');
+  res.json({ message: 'API is working' });
+});
+
+// Auth routes
+app.post('/auth/register', (req, res) => {
+  const { username, email, password } = req.body;
+  // Add your registration logic here
+  res.json({ message: 'Registration endpoint' });
+});
+
+app.post('/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  // Add your login logic here
+  res.json({ message: 'Login endpoint' });
+});
+
+// Exemple d'une route API
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API fonctionne correctement !' });
 });
 
 // Tester la connexion à la base de données
