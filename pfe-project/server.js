@@ -11,14 +11,15 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:3001",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:80",
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:3001",
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:80",
+  credentials: true
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,7 +45,7 @@ io.on('connection', (socket) => {
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'mysqldb',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || 'my-secret-pw',
   database: process.env.DB_NAME || 'ProjetPfeAgil',
   connectionLimit: 10
 });
@@ -59,14 +60,12 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
+// API Routes
+app.use('/api', require('./routes/api'));
+
 // Définir une route pour '/'
 app.get('/', (req, res) => {
   res.send('Bienvenue sur le serveur Node.js pour le projet PFE.');
-});
-
-// Exemple d'une route API
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API fonctionne correctement !' });
 });
 
 // Tester la connexion à la base de données
@@ -81,6 +80,6 @@ app.get('/test-db', (req, res) => {
 
 // Start server on configured port
 const PORT = process.env.NODE_DOCKER_PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
