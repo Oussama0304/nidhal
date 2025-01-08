@@ -5,7 +5,6 @@ services:
     image: mysql:5.7
     container_name: mysqldb
     restart: unless-stopped
-    env_file: ./.env  # Charger les variables depuis un fichier .env
     environment:
       - MYSQL_ROOT_PASSWORD=my-secret-pw  # Utilisation de variables d'environnement
       - MYSQL_DATABASE=ProjetPfeAgil
@@ -23,7 +22,6 @@ services:
       context: ./pfe-project  # Répertoire du backend
     container_name: back
     restart: unless-stopped
-    env_file: ./.env  # Charger les variables depuis un fichier .env
     ports:
       - "3000:3000"  # Port local : port docker
     environment:
