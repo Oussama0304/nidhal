@@ -7,10 +7,10 @@ services:
     restart: unless-stopped
     env_file: ./.env  # Charger les variables depuis un fichier .env
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}  # Utilisation de variables d'environnement
-      - MYSQL_DATABASE=${MYSQLDB_DATABASE}
+      - MYSQL_ROOT_PASSWORD=my-secret-pw  # Utilisation de variables d'environnement
+      - MYSQL_DATABASE=ProjetPfeAgil
     ports:
-      - "${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}"  # Port local : port docker
+      - "3306:3306"  # Port local : port docker
     volumes:
       - db:/var/lib/mysql  # Volume persistant pour la base de données
     networks:
@@ -25,14 +25,14 @@ services:
     restart: unless-stopped
     env_file: ./.env  # Charger les variables depuis un fichier .env
     ports:
-      - "${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}"  # Port local : port docker
+      - "3000:3000"  # Port local : port docker
     environment:
       - DB_HOST=mysqldb
-      - DB_USER=${MYSQLDB_USER}
-      - DB_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
-      - DB_NAME=${MYSQLDB_DATABASE}
-      - DB_PORT=${MYSQLDB_DOCKER_PORT}
-      - CLIENT_ORIGIN=${CLIENT_ORIGIN}
+      - DB_USER=root
+      - DB_PASSWORD=my-secret-pw
+      - DB_NAME=ProjetPfeAgil
+      - DB_PORT=3306
+      - CLIENT_ORIGIN=http://localhost:3001
     networks:
       - backend  # Réseau interne pour communication avec mysqldb
       - frontend  # Réseau pour interagir avec le frontend
@@ -43,10 +43,10 @@ services:
     build:
       context: ./pffe-project-front  # Répertoire du frontend
       args:
-        - REACT_APP_API_BASE_URL=${CLIENT_API_BASE_URL}  # URL de l'API
+        - REACT_APP_API_BASE_URL=http://localhost:3000  # URL de l'API
     container_name: front
     ports:
-      - "${REACT_LOCAL_PORT}:${REACT_DOCKER_PORT}"  # Port local : port docker
+      - "80:80"  # Port local : port docker
     networks:
       - frontend  # Réseau pour interagir avec le frontend
 
