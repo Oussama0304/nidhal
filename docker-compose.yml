@@ -20,6 +20,7 @@ services:
       - mysqldb  # Dépend de mysqldb pour que MySQL soit prêt avant
     build:
       context: ./pfe-project  # Répertoire du backend
+      dockerfile: Dockerfile.backend
     container_name: back
     restart: unless-stopped
     ports:
@@ -40,6 +41,7 @@ services:
       - back  # Dépend de bezkoder-api pour être sûr que l'API est prête
     build:
       context: ./pffe-project-front  # Répertoire du frontend
+      dockerfile: Dockerfile.frontend
       args:
         - REACT_APP_API_BASE_URL=http://localhost:3000  # URL de l'API
     container_name: front
