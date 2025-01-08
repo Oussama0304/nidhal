@@ -1,67 +1,58 @@
+version: '3.8'
+
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    container_name: backend
-    environment:
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASSWORD=my-secret-pw # Le mot de passe pour MySQL
-      - DB_NAME=ProjetPfeAgil
-      - NODE_ENV=production
-    ports:
-      - "3000:3000"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - myNetwork
-    restart: unless-stopped
-
-  mysql:
+  mysqldb:
     image: mysql:5.7
-    container_name: mysql
+    container_name: mysqldb
     restart: unless-stopped
+    env_file: ./.env  # Charger les variables depuis un fichier .env
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw # Ajout d'un mot de passe pour MySQL
-      MYSQL_DATABASE: ProjetPfeAgil
-      MYSQL_ROOT_HOST: "%"
-    command: 
-      - --default-authentication-plugin=mysql_native_password
+      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}  # Utilisation de variables d'environnement
+      - MYSQL_DATABASE=${MYSQLDB_DATABASE}
     ports:
-      - "3306:3306"
-    networks:
-      - myNetwork
+      - "${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}"  # Port local : port docker
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  frontend:
-    build:
-      context: ../pfe-project-front
-      dockerfile: Dockerfile.frontend
-    container_name: frontend
-    ports:
-      - "80:80"
-    depends_on:
-      backend:
-        condition: service_healthy
+      - db:/var/lib/mysql  # Volume persistant pour la base de données
     networks:
-      - myNetwork
+      - backend  # Réseau interne pour communication avec le backend
+
+  back:
+    depends_on:
+      - mysqldb  # Dépend de mysqldb pour que MySQL soit prêt avant
+    build:
+      context: ./pfe-project  # Répertoire du backend
+    container_name: back
     restart: unless-stopped
+    env_file: ./.env  # Charger les variables depuis un fichier .env
+    ports:
+      - "${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}"  # Port local : port docker
+    environment:
+      - DB_HOST=mysqldb
+      - DB_USER=${MYSQLDB_USER}
+      - DB_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+      - DB_NAME=${MYSQLDB_DATABASE}
+      - DB_PORT=${MYSQLDB_DOCKER_PORT}
+      - CLIENT_ORIGIN=${CLIENT_ORIGIN}
+    networks:
+      - backend  # Réseau interne pour communication avec mysqldb
+      - frontend  # Réseau pour interagir avec le frontend
+
+  front:
+    depends_on:
+      - back  # Dépend de bezkoder-api pour être sûr que l'API est prête
+    build:
+      context: ./pffe-project-front  # Répertoire du frontend
+      args:
+        - REACT_APP_API_BASE_URL=${CLIENT_API_BASE_URL}  # URL de l'API
+    container_name: front
+    ports:
+      - "${REACT_LOCAL_PORT}:${REACT_DOCKER_PORT}"  # Port local : port docker
+    networks:
+      - frontend  # Réseau pour interagir avec le frontend
+
+volumes: 
+  db:  # Volume persistant pour la base de données MySQL
 
 networks:
-  myNetwork:
-    driver: bridge
-    name: pfe_network
-
-volumes:
-  mysql_data:
-    name: pfe_mysql_data
+  backend:  # Réseau interne pour la communication backend <=> MySQL et backend <=> frontend
+  frontend:  # Réseau interne pour la communication frontend <=> backend

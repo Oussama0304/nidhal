@@ -1,6 +1,7 @@
 # Use a base image with NodeJS 18
-FROM node:18
+FROM node:14
 
+WORKDIR /pfe-project
 # Install all the dependencies in the container using the package.json file
 COPY package.json .
 RUN npm install

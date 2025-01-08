@@ -1,11 +1,14 @@
+require("dotenv").config(); // Charger les variables d'environnement
+
 const mysql = require('mysql');
 
+// Configuration de la connexion avec des variables d'environnement
 const db = mysql.createPool({
-    host: 'mysql',
-    user: 'root',
-    password: 'my-secret-pw', // Le mot de passe MySQL
-    database: 'ProjetPfeAgil',
-    connectionLimit: 10
+    host: process.env.DB_HOST || 'localhost', // Hôte par défaut : localhost
+    user: process.env.DB_USER || 'root', // Utilisateur par défaut : root
+    password: process.env.DB_PASSWORD || '', // Mot de passe par défaut : vide
+    database: process.env.DB_NAME || 'ProjetPfeAgil', // Nom de la base par défaut : ProjetPfeAgil
+    connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT, 10) || 10 // Limite des connexions
 });
 
 // Ajouter la colonne idUtilisateur si elle n'existe pas
@@ -19,7 +22,7 @@ const addUserIdColumn = () => {
         const checkColumnQuery = `
             SELECT COUNT(*) as count 
             FROM information_schema.COLUMNS 
-            WHERE TABLE_SCHEMA = 'ProjetPfeAgil' 
+            WHERE TABLE_SCHEMA = '${process.env.DB_NAME}' 
             AND TABLE_NAME = 'Commande' 
             AND COLUMN_NAME = 'idUtilisateur'
         `;
