@@ -23,10 +23,6 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Import and mount routes
-const authRoutes = require('./routes/auth');
-app.use('/', authRoutes);  // This will make /register and /login available directly
-
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
