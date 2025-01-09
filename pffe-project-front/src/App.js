@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemIcon, ListItemText } from '@mui/material';
@@ -252,13 +252,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Routes>
-          <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
-          <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/dashboard" />} />
-          <Route path="/" element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" />} />
-          
-          {/* Protected Routes */}
-          <Route element={isAuthenticated ? <Box sx={{ display: 'flex' }}>
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex' }}>
             <AppBar
               position="fixed"
               sx={{
@@ -321,47 +316,44 @@ function App() {
                 marginTop: '64px'
               }}
             >
-              <Outlet />
+              <Routes>
+                <Route path="/dashboard" element={getDashboardComponent(userRole)} />
+                {userRole === 'ADMIN' && (
+                  <>
+                    <Route path="/stations" element={<StationList />} />
+                    <Route path="/produits" element={<ProduitList />} />
+                  </>
+                )}
+                {userRole === 'GERANT' && (
+                  <>
+                    <Route path="/commandes" element={<CommandeList />} />
+                    <Route path="/produits" element={<ProduitList readOnly />} />
+                  </>
+                )}
+                {userRole === 'COMMERCIAL' && (
+                  <>
+                    <Route path="/reclamations" element={<ReclamationList />} />
+                    <Route path="/stations" element={<StationList readOnly />} />
+                  </>
+                )}
+                {userRole === 'DEPOT' && (
+                  <>
+                    <Route path="/inventory" element={<ProduitList />} />
+                    <Route path="/deliveries" element={<CommandeList />} />
+                  </>
+                )}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
             </Box>
-          </Box> : <Navigate to="/login" />}>
-            <Route path="/dashboard" element={getDashboardComponent(userRole)} />
-            
-            {/* Admin Routes */}
-            {userRole === 'ADMIN' && (
-              <>
-                <Route path="/stations" element={<StationList />} />
-                <Route path="/produits" element={<ProduitList />} />
-              </>
-            )}
-            
-            {/* Gerant Routes */}
-            {userRole === 'GERANT' && (
-              <>
-                <Route path="/commandes" element={<CommandeList />} />
-                <Route path="/produits" element={<ProduitList readOnly />} />
-              </>
-            )}
-            
-            {/* Commercial Routes */}
-            {userRole === 'COMMERCIAL' && (
-              <>
-                <Route path="/reclamations" element={<ReclamationList />} />
-                <Route path="/stations" element={<StationList readOnly />} />
-              </>
-            )}
-            
-            {/* Depot Routes */}
-            {userRole === 'DEPOT' && (
-              <>
-                <Route path="/inventory" element={<ProduitList />} />
-                <Route path="/deliveries" element={<CommandeList />} />
-              </>
-            )}
-          </Route>
-          
-          {/* Catch all route */}
-          <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
-        </Routes>
+          </Box>
+        ) : (
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        )}
       </Router>
     </ThemeProvider>
   );

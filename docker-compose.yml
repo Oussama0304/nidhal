@@ -43,8 +43,12 @@ services:
       context: ./pffe-project-front
       dockerfile: Dockerfile.frontend
     container_name: front
+    restart: unless-stopped
     ports:
       - "3001:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:3000/api
     networks:
       - frontend
 
