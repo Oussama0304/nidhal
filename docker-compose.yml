@@ -34,7 +34,7 @@ services:
       - CLIENT_ORIGIN=http://localhost:80
     networks:
       - backend
-      - frontend
+      
 
   front:
     depends_on:
@@ -46,11 +46,11 @@ services:
     ports:
       - "80:80"
     networks:
-      - frontend
+      - backend
 
 volumes:
   db:
 
 networks:
   backend:
-  frontend:
+  
