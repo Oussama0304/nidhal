@@ -24,17 +24,17 @@ services:
     container_name: back
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
       - DB_HOST=mysqldb
       - DB_USER=root
       - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
-      - CLIENT_ORIGIN=http://localhost:80
+      - CLIENT_ORIGIN=http://localhost:3001
     networks:
       - backend
-      
+      - frontend
 
   front:
     depends_on:
@@ -44,13 +44,15 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: front
     ports:
-      - "80:80"
+      - "3001:80"
     networks:
-      - backend
+      - frontend
 
 volumes:
   db:
 
 networks:
   backend:
-  
+    driver: bridge
+  frontend:
+    driver: bridge
