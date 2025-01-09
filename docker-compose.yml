@@ -31,7 +31,7 @@ services:
       - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
-      - CLIENT_ORIGIN=http://localhost:3001
+      - CLIENT_ORIGIN=http://localhost:80
     networks:
       - backend
       - frontend
