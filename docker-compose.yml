@@ -23,15 +23,15 @@ services:
       dockerfile: Dockerfile.backend
     container_name: back
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     environment:
       - DB_HOST=mysqldb
       - DB_USER=root
       - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
-      - CLIENT_ORIGIN=http://localhost
-    ports:
-      - "3000:3000"
+      - CLIENT_ORIGIN=http://localhost:3001
     networks:
       - backend
       - frontend

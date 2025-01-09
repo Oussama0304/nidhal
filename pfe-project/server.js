@@ -3,7 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const auth = require('./middleware/auth'); 
+const auth = require('./middleware/auth'); // Si nécessaire, sinon retirez cette ligne
 const http = require('http');
 const path = require('path');
 
@@ -11,19 +11,15 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.CLIENT_ORIGIN || "http://localhost",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:3001",
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost",
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:3001",
 }));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -48,7 +44,7 @@ io.on('connection', (socket) => {
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'mysqldb',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'my-secret-pw',
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'ProjetPfeAgil',
   connectionLimit: 10
 });
@@ -65,20 +61,7 @@ db.getConnection((err, connection) => {
 
 // Définir une route pour '/'
 app.get('/', (req, res) => {
-  res.json({ message: 'API is working' });
-});
-
-// Auth routes
-app.post('/auth/register', (req, res) => {
-  const { username, email, password } = req.body;
-  // Add your registration logic here
-  res.json({ message: 'Registration endpoint' });
-});
-
-app.post('/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  // Add your login logic here
-  res.json({ message: 'Login endpoint' });
+  res.send('Bienvenue sur le serveur Node.js pour le projet PFE.');
 });
 
 // Exemple d'une route API
@@ -98,6 +81,6 @@ app.get('/test-db', (req, res) => {
 
 // Start server on configured port
 const PORT = process.env.NODE_DOCKER_PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
