@@ -3,7 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const auth = require('./middleware/auth'); // Si nécessaire, sinon retirez cette ligne
+const auth = require('./middleware/auth');
 const http = require('http');
 const path = require('path');
 
@@ -59,17 +59,22 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
-// Définir une route pour '/'
+// Import routes
+const authRoutes = require('./routes/auth');
+const commandeRoutes = require('./routes/commandes');
+const reclamationRoutes = require('./routes/reclamations');
+const userRoutes = require('./routes/users');
+const stationRoutes = require('./routes/stations');
+const productRoutes = require('./routes/products');
+const dashboardRoutes = require('./routes/admin/dashboard');
+const exportRoutes = require('./routes/exportRoutes');
+
+// Route de base pour tester
 app.get('/', (req, res) => {
-  res.send('Bienvenue sur le serveur Node.js pour le projet PFE.');
+  res.json({ message: 'API is running' });
 });
 
-// Exemple d'une route API
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API fonctionne correctement !' });
-});
-
-// Tester la connexion à la base de données
+// Route de test pour la base de données
 app.get('/test-db', (req, res) => {
   db.query('SELECT 1 + 1 AS solution', (err, results) => {
     if (err) {
@@ -79,8 +84,30 @@ app.get('/test-db', (req, res) => {
   });
 });
 
-// Start server on configured port
+// Public routes
+app.use('/api/auth', authRoutes);
+
+// Protected routes
+app.use('/api/commandes', auth, commandeRoutes);
+app.use('/api/reclamations', auth, reclamationRoutes);
+app.use('/api/users', auth, userRoutes);
+app.use('/api/stations', auth, stationRoutes);
+app.use('/api/products', auth, productRoutes);
+app.use('/api/admin/dashboard', auth, dashboardRoutes);
+app.use('/api', auth, exportRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Global error handler:', err);
+  res.status(500).json({ error: err.message || 'Une erreur est survenue' });
+});
+
+// Export pour utilisation dans d'autres fichiers
+app.set('io', io);
+
 const PORT = process.env.NODE_DOCKER_PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = app;
