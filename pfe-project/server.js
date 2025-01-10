@@ -59,10 +59,25 @@ db.getConnection((err, connection) => {
   connection.release();
 });
 
-// Définir une route pour '/'
+// Basic routes
 app.get('/', (req, res) => {
-  res.send('Bienvenue sur le serveur Node.js pour le projet PFE.');
+  res.json({ message: 'Backend API is running' });
 });
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
+
+// Import and use routes
+const userRoutes = require('./routes/user.routes');
+const stationRoutes = require('./routes/station.routes');
+const productRoutes = require('./routes/product.routes');
+const commandeRoutes = require('./routes/commande.routes');
+
+app.use('/api/users', userRoutes);
+app.use('/api/stations', stationRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/commandes', commandeRoutes);
 
 // Exemple d'une route API
 app.get('/api/test', (req, res) => {
@@ -77,6 +92,12 @@ app.get('/test-db', (req, res) => {
     }
     res.json({ message: 'Connexion réussie', solution: results[0].solution });
   });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // Start server on configured port
