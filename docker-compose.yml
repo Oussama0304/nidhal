@@ -8,14 +8,10 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=my-secret-pw
       - MYSQL_DATABASE=ProjetPfeAgil
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
     ports:
       - "3306:3306"
     volumes:
       - db:/var/lib/mysql
-      - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/database.sql
-      - ./pfe-project/sql:/docker-entrypoint-initdb.d
     networks:
       - backend
 
@@ -31,8 +27,8 @@ services:
       - "3000:80"
     environment:
       - DB_HOST=mysqldb
-      - DB_USER=user
-      - DB_PASSWORD=password
+      - DB_USER=root
+      - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
       - CLIENT_ORIGIN=http://localhost:3001

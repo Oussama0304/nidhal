@@ -1,11 +1,30 @@
+# Étape de construction
 FROM node:14
 
+# Définir le répertoire de travail
 WORKDIR /app
-COPY . /app
 
+# Copier les fichiers de configuration
+COPY package*.json ./
+
+# Installer les dépendances
 RUN npm install
 
-# Ajouter le script wait-for-mysql.js
-COPY wait-for-mysql.js /app/wait-for-mysql.js
+# Copier le reste des fichiers du projet
+COPY . .
 
+# Créer le dossier uploads s'il n'existe pas
+RUN mkdir -p uploads
+
+# Donner les permissions nécessaires
+RUN chmod -R 755 /app
+
+# Exposer le port 80
+EXPOSE 80
+
+# Ajouter le script wait-for-mysql et le rendre exécutable
+COPY wait-for-mysql.js /app/wait-for-mysql.js
+RUN chmod +x /app/wait-for-mysql.js
+
+# Commande de démarrage
 CMD ["sh", "-c", "node wait-for-mysql.js && node server.js"]
