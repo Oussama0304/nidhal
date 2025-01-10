@@ -24,7 +24,7 @@ services:
     container_name: back
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3000:3000"  # Assurez-vous que cela correspond au port utilisé dans `server.js`
     environment:
       - DB_HOST=mysqldb
       - DB_USER=root
@@ -32,6 +32,7 @@ services:
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
       - CLIENT_ORIGIN=http://localhost:3001
+      - NODE_DOCKER_PORT=3000  # Ajoutez si nécessaire
     networks:
       - backend
       - frontend

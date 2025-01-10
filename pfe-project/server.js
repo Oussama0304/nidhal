@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const auth = require('./middleware/auth');
 const http = require('http');
 const path = require('path');
+const waitForMysql = require('./utils/waitForMysql'); // Utilisation d'un utilitaire pour attendre MySQL
 
 const app = express();
 const server = http.createServer(app);
@@ -49,7 +50,7 @@ const db = mysql.createPool({
   connectionLimit: 10
 });
 
-// Vérification de la connexion
+// Vérification de la connexion à la base de données
 db.getConnection((err, connection) => {
   if (err) {
     console.error('Erreur de connexion à la base de données:', err);
@@ -57,6 +58,22 @@ db.getConnection((err, connection) => {
   }
   console.log('Connecté à la base de données MySQL');
   connection.release();
+});
+
+// Route de test pour la base de données
+app.get('/test-db', async (req, res) => {
+  try {
+    // Attendre que MySQL soit prêt
+    await waitForMysql(db);
+    db.query('SELECT 1 + 1 AS solution', (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Erreur de connexion à la base de données', details: err });
+      }
+      res.json({ message: 'Connexion réussie', solution: results[0].solution });
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'La base de données n\'est pas prête', details: err.message });
+  }
 });
 
 // Import routes
@@ -72,16 +89,6 @@ const exportRoutes = require('./routes/exportRoutes');
 // Route de base pour tester
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
-});
-
-// Route de test pour la base de données
-app.get('/test-db', (req, res) => {
-  db.query('SELECT 1 + 1 AS solution', (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: 'Erreur de connexion à la base de données', details: err });
-    }
-    res.json({ message: 'Connexion réussie', solution: results[0].solution });
-  });
 });
 
 // Public routes
