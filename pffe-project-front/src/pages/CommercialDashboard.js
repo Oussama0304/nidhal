@@ -264,7 +264,13 @@ const CommercialDashboard = () => {
   };
 
   if (loading) {
-    return <div>Chargement...</div>;
+    return (
+      <div>
+        <Typography>
+          {"L'application n'est pas disponible pour le moment"}
+        </Typography>
+      </div>
+    );
   }
 
   return (
