@@ -26,7 +26,7 @@ const ProductManagement = () => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [loadProducts]);
 
   const loadProducts = async () => {
     try {

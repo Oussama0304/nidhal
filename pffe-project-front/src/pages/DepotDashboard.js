@@ -88,8 +88,11 @@ const DepotDashboard = () => {
 
   useEffect(() => {
     fetchValidatedOrders();
+  }, [fetchValidatedOrders]);
+
+  useEffect(() => {
     fetchStations();
-  }, [navigate]);
+  }, []);
 
   const assignOrderToStation = async () => {
     try {

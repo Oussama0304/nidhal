@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  Typography,
   Container,
   Grid,
   Paper,
-  Typography,
   Button,
   Card,
   CardContent,
@@ -39,13 +40,11 @@ import {
   Warning,
   Notifications as NotificationsIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import io from 'socket.io-client';
 
 const CommercialDashboard = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
   const [commandes, setCommandes] = useState([]);
   const [reclamations, setReclamations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,13 +69,11 @@ const CommercialDashboard = () => {
   };
 
   useEffect(() => {
-    // Connexion Socket.IO
     const newSocket = io('http://localhost:3000', {
       transports: ['websocket', 'polling']
     });
     setSocket(newSocket);
 
-    // Écouter les nouvelles commandes
     newSocket.on('nouvelle-commande', (commande) => {
       console.log('Nouvelle commande reçue:', commande);
       setNotification({
@@ -86,7 +83,6 @@ const CommercialDashboard = () => {
       fetchCommandes();
     });
 
-    // Charger les réclamations au démarrage
     fetchReclamations();
 
     return () => {
@@ -104,7 +100,6 @@ const CommercialDashboard = () => {
       };
 
       const response = await axios.get('http://localhost:3000/api/reclamations', config);
-      // Filtrer uniquement les réclamations commerciales
       const reclamationsCommerciales = response.data.filter(rec => rec.type === 'COMMERCIALE');
       setReclamations(reclamationsCommerciales);
     } catch (error) {
@@ -147,14 +142,12 @@ const CommercialDashboard = () => {
           headers: { Authorization: `Bearer ${token}` }
         };
 
-        // Charger les commandes
         const commandesResponse = await axios.get(
           'http://localhost:3000/api/commandes',
           config
         );
         setCommandes(commandesResponse.data);
 
-        // Charger les réclamations
         const reclamationsResponse = await axios.get(
           'http://localhost:3000/api/reclamations',
           config
@@ -232,7 +225,6 @@ const CommercialDashboard = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Mettre à jour l'état localement
       setReclamations(prev => prev.map(rec => 
         rec.idReclamation === reclamationId ? { ...rec, etat: newStatus } : rec
       ));
@@ -279,7 +271,6 @@ const CommercialDashboard = () => {
     <Box sx={{ flexGrow: 1 }}>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Grid container spacing={3}>
-          {/* En-tête */}
           <Grid item xs={12}>
             <Paper sx={{ p: 2 }}>
               <Typography variant="h4" component="h1">
@@ -288,7 +279,6 @@ const CommercialDashboard = () => {
             </Paper>
           </Grid>
 
-          {/* Commandes récentes */}
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 2 }}>
               <Typography variant="h6" gutterBottom>
@@ -321,7 +311,6 @@ const CommercialDashboard = () => {
             </Paper>
           </Grid>
 
-          {/* Section des réclamations commerciales */}
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 2, height: '100%' }}>
               <Typography variant="h6" gutterBottom>
@@ -385,7 +374,6 @@ const CommercialDashboard = () => {
           </Grid>
         </Grid>
 
-        {/* Dialog pour afficher les détails d'une réclamation */}
         <Dialog
           open={reclamationDetailsOpen}
           onClose={() => setReclamationDetailsOpen(false)}
@@ -471,7 +459,6 @@ const CommercialDashboard = () => {
           </DialogActions>
         </Dialog>
 
-        {/* Dialog des détails de commande */}
         <Dialog
           open={detailsOpen}
           onClose={() => setDetailsOpen(false)}
@@ -518,7 +505,6 @@ const CommercialDashboard = () => {
           </DialogActions>
         </Dialog>
 
-        {/* Snackbar pour les notifications */}
         <Snackbar
           open={notification !== null}
           autoHideDuration={6000}
