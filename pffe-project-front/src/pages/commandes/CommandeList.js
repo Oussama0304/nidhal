@@ -36,13 +36,11 @@ import socket from '../../services/socket';
 
 const CommandeList = () => {
   const [commandes, setCommandes] = useState([]);
-  const [error, setError] = useState(null);
   const [produits, setProduits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCommande, setSelectedCommande] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const [filtreStatut, setFiltreStatut] = useState('tous');
   const [notification, setNotification] = useState({
     open: false,
@@ -52,9 +50,13 @@ const CommandeList = () => {
 
   useEffect(() => {
     fetchData();
-    const cleanup = initializeSocket();
-    return () => cleanup();
-  }, [fetchData, initializeSocket]);
+    initializeSocket();
+
+    return () => {
+      socket.off('nouvelle-commande');
+      socket.off('commande-status-update');
+    };
+  }, []);
 
   const initializeSocket = () => {
     socket.on('nouvelle-commande', (nouvelleCommande) => {

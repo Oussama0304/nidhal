@@ -4,35 +4,43 @@ const API_URL = 'http://localhost:3000/api';
 
 class ExportService {
   async exportToPdf(data) {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${API_URL}/admin/export/pdf`,
-      { data },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        responseType: 'blob',
-      }
-    );
-    return response.data;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${API_URL}/admin/export/pdf`,
+        { data },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          responseType: 'blob',
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async exportToExcel(data) {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${API_URL}/admin/export/excel`,
-      { data },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        responseType: 'blob',
-      }
-    );
-    return response.data;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${API_URL}/admin/export/excel`,
+        { data },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          responseType: 'blob',
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Fonction utilitaire pour déclencher le téléchargement

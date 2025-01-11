@@ -26,7 +26,6 @@ import ReclamationList from './pages/reclamations/ReclamationList';
 import StationList from './pages/stations/StationList';
 import ProduitList from './pages/produits/ProduitList';
 import LandingPage from './pages/LandingPage';
-import PrivateLayout from './PrivateLayout'; // Import du composant PrivateLayout
 
 const drawerWidth = 240;
 
@@ -252,57 +251,109 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router basename="/">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          {/* Routes protégées */}
-          {isAuthenticated ? (
-            <>
-              <Route path="/dashboard" element={
-                <PrivateLayout>
-                  {getDashboardComponent(userRole)}
-                </PrivateLayout>
-              } />
-              
-              {/* Routes Admin */}
-              {userRole === 'ADMIN' && (
-                <>
-                  <Route path="/stations" element={<PrivateLayout><StationList /></PrivateLayout>} />
-                  <Route path="/produits" element={<PrivateLayout><ProduitList /></PrivateLayout>} />
-                </>
-              )}
-              
-              {/* Routes Gérant */}
-              {userRole === 'GERANT' && (
-                <>
-                  <Route path="/commandes" element={<PrivateLayout><CommandeList /></PrivateLayout>} />
-                  <Route path="/produits" element={<PrivateLayout><ProduitList readOnly /></PrivateLayout>} />
-                </>
-              )}
-              
-              {/* Routes Commercial */}
-              {userRole === 'COMMERCIAL' && (
-                <>
-                  <Route path="/reclamations" element={<PrivateLayout><ReclamationList /></PrivateLayout>} />
-                  <Route path="/stations" element={<PrivateLayout><StationList readOnly /></PrivateLayout>} />
-                </>
-              )}
-              
-              {/* Routes Dépôt */}
-              {userRole === 'DEPOT' && (
-                <>
-                  <Route path="/inventory" element={<PrivateLayout><ProduitList /></PrivateLayout>} />
-                  <Route path="/deliveries" element={<PrivateLayout><CommandeList /></PrivateLayout>} />
-                </>
-              )}
-            </>
-          ) : (
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          )}
-        </Routes>
+      <Router>
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex' }}>
+            <AppBar
+              position="fixed"
+              sx={{
+                width: { sm: `calc(100% - ${drawerWidth}px)` },
+                ml: { sm: `${drawerWidth}px` },
+              }}
+            >
+              <Toolbar>
+                <IconButton
+                  color="inherit"
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 2, display: { sm: 'none' } }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Typography variant="h6" noWrap component="div">
+                  {userRole === 'ADMIN' ? 'Administration' : 
+                   userRole === 'COMMERCIAL' ? 'Interface Commercial' : 
+                   userRole === 'DEPOT' ? 'Interface Dépôt' : 
+                   'Gestion de Station'}
+                </Typography>
+              </Toolbar>
+            </AppBar>
+
+            <Box
+              component="nav"
+              sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+            >
+              <Drawer
+                variant="temporary"
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{ keepMounted: true }}
+                sx={{
+                  display: { xs: 'block', sm: 'none' },
+                  '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                }}
+              >
+                {drawer}
+              </Drawer>
+              <Drawer
+                variant="permanent"
+                sx={{
+                  display: { xs: 'none', sm: 'block' },
+                  '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                }}
+                open
+              >
+                {drawer}
+              </Drawer>
+            </Box>
+
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                p: 3,
+                width: { sm: `calc(100% - ${drawerWidth}px)` },
+                marginTop: '64px'
+              }}
+            >
+              <Routes>
+                <Route path="/dashboard" element={getDashboardComponent(userRole)} />
+                {userRole === 'ADMIN' && (
+                  <>
+                    <Route path="/stations" element={<StationList />} />
+                    <Route path="/produits" element={<ProduitList />} />
+                  </>
+                )}
+                {userRole === 'GERANT' && (
+                  <>
+                    <Route path="/commandes" element={<CommandeList />} />
+                    <Route path="/produits" element={<ProduitList readOnly />} />
+                  </>
+                )}
+                {userRole === 'COMMERCIAL' && (
+                  <>
+                    <Route path="/reclamations" element={<ReclamationList />} />
+                    <Route path="/stations" element={<StationList readOnly />} />
+                  </>
+                )}
+                {userRole === 'DEPOT' && (
+                  <>
+                    <Route path="/inventory" element={<ProduitList />} />
+                    <Route path="/deliveries" element={<CommandeList />} />
+                  </>
+                )}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </Box>
+          </Box>
+        ) : (
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        )}
       </Router>
     </ThemeProvider>
   );

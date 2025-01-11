@@ -12,17 +12,14 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.CLIENT_ORIGIN || "http://front:80",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:3001",
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://front:80',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:3001",
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

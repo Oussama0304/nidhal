@@ -79,7 +79,7 @@ const ProduitList = () => {
 
   useEffect(() => {
     fetchProduits();
-  }, [fetchProduits]);
+  }, []);
 
   const fetchProduits = async () => {
     try {
