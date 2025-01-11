@@ -267,7 +267,7 @@ const CommercialDashboard = () => {
     return (
       <div>
         <Typography>
-          {"L'application n'est pas disponible pour le moment"}
+          {`L\u2019application n\u2019est pas disponible pour le moment`}
         </Typography>
       </div>
     );

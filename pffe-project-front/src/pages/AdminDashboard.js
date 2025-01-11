@@ -187,6 +187,21 @@ function AdminDashboard() {
     setOpenDialog(true);
   };
 
+  const getReclamationIcon = (type) => {
+    let icon;
+    switch (type) {
+      case 'COMMERCIALE':
+        icon = <BusinessIcon />;
+        break;
+      case 'TECHNIQUE':
+        icon = <BuildIcon />;
+        break;
+      default:
+        icon = <HelpIcon />;
+    }
+    return icon;
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0: // Dashboard
@@ -412,7 +427,7 @@ function AdminDashboard() {
                       {filteredReclamations.map((reclamation) => (
                         <TableRow key={reclamation.idReclamation}>
                           <TableCell>{reclamation.idReclamation}</TableCell>
-                          <TableCell>{reclamation.type}</TableCell>
+                          <TableCell>{getReclamationIcon(reclamation.type)}</TableCell>
                           <TableCell>{reclamation.description}</TableCell>
                           <TableCell>
                             {reclamation.nom_commercial} {reclamation.prenom_commercial}
@@ -628,6 +643,9 @@ function AdminDashboard() {
           <Button onClick={() => setOpenDialog(false)}>Annuler</Button>
         </DialogActions>
       </Dialog>
+      <Typography>
+        {`L\u2019application n\u2019est pas disponible pour le moment`}
+      </Typography>
     </Box>
   );
 }

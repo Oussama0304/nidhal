@@ -10,13 +10,12 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.(js|jsx)$': 'babel-jest'
+    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react'] }]
   },
   moduleDirectories: ['node_modules', 'src'],
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/coverage/',
-    'src/setupTests.js',
-    'src/reportWebVitals.js'
-  ]
+  transformIgnorePatterns: [
+    '/node_modules/(?!(@mui|@babel|react-router-dom)/)'
+  ],
+  testPathIgnorePatterns: ['/node_modules/', '/build/'],
+  verbose: true
 };
