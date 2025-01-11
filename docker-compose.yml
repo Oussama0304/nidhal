@@ -24,15 +24,15 @@ services:
     container_name: back
     restart: unless-stopped
     ports:
-      - "3000:3000"  # Assurez-vous que cela correspond au port utilisé dans `server.js`
+      - "3000:3000"
     environment:
       - DB_HOST=mysqldb
       - DB_USER=root
       - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
-      - CLIENT_ORIGIN=http://localhost:3001
-      - NODE_DOCKER_PORT=3000  # Ajoutez si nécessaire
+      - CLIENT_ORIGIN=http://front:80
+      - NODE_DOCKER_PORT=3000
     networks:
       - backend
       - frontend
@@ -44,16 +44,16 @@ services:
       context: ./pffe-project-front
       dockerfile: Dockerfile.frontend
     container_name: front
+    environment:
+      - REACT_APP_API_URL=http://back:3000/api
     ports:
       - "3001:80"
     networks:
       - frontend
 
-volumes:
-  db:
-
 networks:
   backend:
-    driver: bridge
   frontend:
-    driver: bridge
+
+volumes:
+  db:
