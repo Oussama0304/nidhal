@@ -12,7 +12,8 @@ services:
       - "3306:3306"
     volumes:
       - db:/var/lib/mysql
-      - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
+      - ./pfe-project/database.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --init-file /docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
 
@@ -25,15 +26,19 @@ services:
     container_name: back
     restart: unless-stopped
     ports:
-      - "3000:3000"  # Assurez-vous que cela correspond au port utilisé dans `server.js`
+      - "3000:3000"
     environment:
+      - NODE_ENV=development
+      - PORT=3000
       - DB_HOST=mysqldb
       - DB_USER=root
       - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
       - CLIENT_ORIGIN=http://localhost:3001
-      - NODE_DOCKER_PORT=3000  # Ajoutez si nécessaire
+    volumes:
+      - ./pfe-project:/app
+      - /app/node_modules
     networks:
       - backend
       - frontend
@@ -47,14 +52,14 @@ services:
     container_name: front
     ports:
       - "3001:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
     networks:
       - frontend
 
-volumes:
-  db:
-
 networks:
   backend:
-    driver: bridge
   frontend:
-    driver: bridge
+
+volumes:
+  db:
