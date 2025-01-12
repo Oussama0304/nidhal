@@ -1,12 +1,11 @@
 require("dotenv").config();
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql'); // changed from 'localhost'
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const auth = require('./middleware/auth');
 const http = require('http');
 const path = require('path');
-const waitForMysql = require('./utils/waitForMysql'); // Utilisation d'un utilitaire pour attendre MySQL
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Log all requests
 app.use((req, res, next) => {
@@ -102,6 +102,15 @@ app.use('/api/stations', auth, stationRoutes);
 app.use('/api/products', auth, productRoutes);
 app.use('/api/admin/dashboard', auth, dashboardRoutes);
 app.use('/api', auth, exportRoutes);
+
+// Catch-all route handler for client-side routing
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
