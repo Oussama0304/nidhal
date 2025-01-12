@@ -25,7 +25,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../pffe-project-front/build')));
 
 // Log all requests
 app.use((req, res, next) => {
@@ -105,7 +107,7 @@ app.use('/api', auth, exportRoutes);
 
 // Catch-all route handler for client-side routing
 app.get('/*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'), function(err) {
+  res.sendFile(path.join(__dirname, '../pffe-project-front/build/index.html'), function(err) {
     if (err) {
       res.status(500).send(err)
     }
