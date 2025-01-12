@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const auth = require('./middleware/auth');
 const http = require('http');
 const path = require('path');
+const waitForMysql = require('./wait-for-mysql.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -65,8 +66,7 @@ db.getConnection((err, connection) => {
 // Route de test pour la base de données
 app.get('/test-db', async (req, res) => {
   try {
-    // Attendre que MySQL soit prêt
-    await waitForMysql(db);
+    await waitForMysql();
     db.query('SELECT 1 + 1 AS solution', (err, results) => {
       if (err) {
         return res.status(500).json({ error: 'Erreur de connexion à la base de données', details: err });

@@ -23,4 +23,10 @@ const checkMySQLConnection = () => {
   });
 };
 
-checkMySQLConnection().then(() => process.exit(0)).catch(() => process.exit(1));
+// Exporter la fonction
+module.exports = checkMySQLConnection;
+
+// Si exécuté directement (pas importé comme module)
+if (require.main === module) {
+  checkMySQLConnection().then(() => process.exit(0)).catch(() => process.exit(1));
+}
