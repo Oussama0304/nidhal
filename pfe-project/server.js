@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'mysqldb',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || 'my-secret-pw',
   database: process.env.DB_NAME || 'ProjetPfeAgil',
   connectionLimit: 10
 });
