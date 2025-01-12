@@ -1,5 +1,5 @@
 # Étape de construction
-FROM node:14
+FROM node:16
 
 # Définir le répertoire de travail
 WORKDIR /app
@@ -7,8 +7,9 @@ WORKDIR /app
 # Copier les fichiers de configuration
 COPY package*.json ./
 
-# Installer les dépendances
-RUN npm install
+# Installer les dépendances avec --legacy-peer-deps
+RUN npm install --legacy-peer-deps
+RUN npm install iconv-lite@latest
 
 # Copier le reste des fichiers du projet
 COPY . .
@@ -19,8 +20,8 @@ RUN mkdir -p uploads
 # Donner les permissions nécessaires
 RUN chmod -R 755 /app
 
-# Exposer le port 80
-EXPOSE 80
+# Exposer le port 3000 (pas 80)
+EXPOSE 3000
 
 # Ajouter le script wait-for-mysql et le rendre exécutable
 COPY wait-for-mysql.js /app/wait-for-mysql.js
