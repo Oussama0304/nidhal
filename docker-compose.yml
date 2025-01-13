@@ -16,10 +16,16 @@ services:
     command: --init-file /docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pmy-secret-pw"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   back:
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     build:
       context: ./pfe-project
       dockerfile: Dockerfile.backend
@@ -35,10 +41,7 @@ services:
       - DB_PASSWORD=my-secret-pw
       - DB_NAME=ProjetPfeAgil
       - DB_PORT=3306
-      - CLIENT_ORIGIN=http://localhost:3001
-    volumes:
-      - ./pfe-project:/app
-      - /app/node_modules
+      - CLIENT_ORIGIN=http://172.18.0.3:3001
     networks:
       - backend
       - frontend
@@ -50,16 +53,19 @@ services:
       context: ./pffe-project-front
       dockerfile: Dockerfile.frontend
     container_name: front
+    restart: unless-stopped
     ports:
       - "3001:80"
     environment:
-      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_API_URL=http://172.18.0.2:3000
     networks:
       - frontend
 
 networks:
   backend:
+    driver: bridge
   frontend:
+    driver: bridge
 
 volumes:
   db:
